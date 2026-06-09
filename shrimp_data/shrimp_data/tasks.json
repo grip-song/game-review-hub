@@ -1,0 +1,453 @@
+{
+  "tasks": [
+    {
+      "id": "b921e61a-d9d4-41d0-8402-5dc58b826cca",
+      "name": "[Phase 1-1] 프로젝트 구조 초기화",
+      "description": "app/ 라우트(layout, page, category/[slug], posts/[id]), components/(layout, review, search, ui, providers), lib/, types/ 디렉터리 및 파일 생성. 완료됨.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:54:37.883Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/layout.tsx",
+          "type": "REFERENCE",
+          "description": "루트 레이아웃"
+        },
+        {
+          "path": "src/app/page.tsx",
+          "type": "REFERENCE",
+          "description": "홈 페이지"
+        },
+        {
+          "path": "src/app/category/[slug]/page.tsx",
+          "type": "REFERENCE",
+          "description": "카테고리 페이지"
+        },
+        {
+          "path": "src/app/posts/[id]/page.tsx",
+          "type": "REFERENCE",
+          "description": "글 상세 페이지"
+        }
+      ],
+      "implementationGuide": "완료된 작업. app/layout.tsx, app/page.tsx, app/category/[slug]/page.tsx, app/posts/[id]/page.tsx, src/components 하위 모든 디렉터리 생성 확인됨.",
+      "verificationCriteria": "모든 라우트 파일 및 컴포넌트 디렉터리 존재 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "app/ 라우트 4개, components/(layout,review,search,ui,providers), lib/, types/ 디렉터리 및 파일 모두 존재 확인됨. Glob 실사로 검증 완료.",
+      "completedAt": "2026-06-09T14:54:37.878Z"
+    },
+    {
+      "id": "15db5ea0-80c1-407c-a094-ee6c5b56ba18",
+      "name": "[Phase 1-2] Notion API 환경 구축",
+      "description": "@notionhq/client 설치 및 환경변수 구조 확정. 완료됨.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b921e61a-d9d4-41d0-8402-5dc58b826cca"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:54:49.936Z",
+      "relatedFiles": [
+        {
+          "path": "package.json",
+          "type": "REFERENCE",
+          "description": "@notionhq/client 의존성"
+        }
+      ],
+      "implementationGuide": "완료된 작업. package.json에 @notionhq/client v5.22.0 설치 확인. .env.local에 NOTION_API_KEY, NOTION_DATABASE_ID 설정 필요(사용자 직접).",
+      "verificationCriteria": "@notionhq/client 설치 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "package.json에 @notionhq/client v5.22.0 설치 확인됨. lib/notion.ts에서 Client import 및 싱글톤 초기화 확인됨.",
+      "completedAt": "2026-06-09T14:54:49.935Z"
+    },
+    {
+      "id": "052397c7-f9a6-4fdd-8d6f-f31d254b981a",
+      "name": "[Phase 1-3] 기본 레이아웃 구조",
+      "description": "Header(sticky, 모바일 Sheet 메뉴, CategoryItem[] props), Footer, Providers(ThemeProvider+TooltipProvider+Toaster), PageContainer 구현 완료.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b921e61a-d9d4-41d0-8402-5dc58b826cca"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:54:51.768Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/layout/header.tsx",
+          "type": "REFERENCE",
+          "description": "헤더 컴포넌트"
+        },
+        {
+          "path": "src/components/layout/footer.tsx",
+          "type": "REFERENCE",
+          "description": "푸터 컴포넌트"
+        },
+        {
+          "path": "src/components/providers/providers.tsx",
+          "type": "REFERENCE",
+          "description": "전역 프로바이더"
+        }
+      ],
+      "implementationGuide": "완료된 작업. header.tsx(Client Component, usePathname), footer.tsx, providers/providers.tsx, layout/page-container.tsx 모두 구현됨.",
+      "verificationCriteria": "Header/Footer/Providers 구현 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "header.tsx(sticky, Sheet 모바일 메뉴, CategoryItem[] props), footer.tsx, providers.tsx, page-container.tsx 모두 구현 확인됨. app/layout.tsx에 Providers+Header+Footer 마운트 구조 완성.",
+      "completedAt": "2026-06-09T14:54:51.765Z"
+    },
+    {
+      "id": "13538caa-0c37-48cb-95cf-b9ac6953ad25",
+      "name": "[Phase 2-1] TypeScript 공통 타입 정의",
+      "description": "src/types/notion.ts에 ReviewPost, ReviewPostDetail, NotionBlock 유니온, CategoryItem 인터페이스 완성.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b921e61a-d9d4-41d0-8402-5dc58b826cca"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:54:53.057Z",
+      "relatedFiles": [
+        {
+          "path": "src/types/notion.ts",
+          "type": "REFERENCE",
+          "description": "전체 도메인 타입 정의"
+        }
+      ],
+      "implementationGuide": "완료된 작업. ReviewPost(id,title,category,tags,published,status,score,pros,cons,coverImage), ReviewPostDetail(+blocks), NotionBlock 유니온 10종, CategoryItem(slug,label,count) 정의됨.",
+      "verificationCriteria": "types/notion.ts 완성 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "src/types/notion.ts에 ReviewPost, ReviewPostDetail, NotionBlock 유니온(10종), NotionRichText, CategoryItem 완전 정의됨. TypeScript strict 호환.",
+      "completedAt": "2026-06-09T14:54:53.054Z"
+    },
+    {
+      "id": "6338c690-3a41-43db-aa32-661c7ced4110",
+      "name": "[Phase 2-2] Notion API 공통 함수",
+      "description": "lib/notion.ts에 Notion 클라이언트 싱글톤 및 fetchPosts, fetchPostById, fetchPostBlocks, fetchCategories, fetchPostDetail 함수 구현 완료. (fetchPosts의 dataSources.query 버그는 별도 태스크로 수정 예정)",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "13538caa-0c37-48cb-95cf-b9ac6953ad25"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:55:03.817Z",
+      "relatedFiles": [
+        {
+          "path": "src/lib/notion.ts",
+          "type": "REFERENCE",
+          "description": "Notion API 래퍼 전체"
+        }
+      ],
+      "implementationGuide": "완료된 작업. 싱글톤 클라이언트, mapPageToReviewPost 변환 함수, mapBlockToNotionBlock, fetchPostDetail(Promise.all 병렬) 모두 구현됨.",
+      "verificationCriteria": "lib/notion.ts 함수 구현 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "lib/notion.ts에 싱글톤 클라이언트, fetchPosts/fetchPostById/fetchPostBlocks/fetchCategories/fetchPostDetail 모두 구현됨. mapPageToReviewPost, mapBlockToNotionBlock 변환 함수 포함. Promise.all 병렬 페칭 확인됨.",
+      "completedAt": "2026-06-09T14:55:03.813Z"
+    },
+    {
+      "id": "164791d3-9503-46b2-a915-6a7c63b179f8",
+      "name": "[Phase 2-3] ReviewCard / ReviewGrid 컴포넌트",
+      "description": "ReviewCard(커버이미지, 카테고리뱃지, 발행일, 별점, 태그), ReviewGrid(1→2→3열 반응형, empty state) 구현 완료.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "13538caa-0c37-48cb-95cf-b9ac6953ad25"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:55:05.168Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/review/ReviewCard.tsx",
+          "type": "REFERENCE",
+          "description": "리뷰 카드"
+        },
+        {
+          "path": "src/components/review/ReviewGrid.tsx",
+          "type": "REFERENCE",
+          "description": "카드 그리드"
+        }
+      ],
+      "implementationGuide": "완료된 작업. ReviewCard는 Server Component, Link+Card+Badge+Image 사용. ReviewGrid는 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 적용.",
+      "verificationCriteria": "ReviewCard/ReviewGrid 구현 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "ReviewCard(Server Component, 커버이미지/뱃지/별점/태그), ReviewGrid(grid-cols-1 sm:grid-cols-2 lg:grid-cols-3, empty state) 모두 구현 확인됨.",
+      "completedAt": "2026-06-09T14:55:05.165Z"
+    },
+    {
+      "id": "9ccf4083-e7a7-4931-85d6-39e5264b82bd",
+      "name": "[Phase 2-4] ReviewDetail / NotionRenderer / CategoryFilter / SearchBar 컴포넌트",
+      "description": "ReviewDetail(평점 막대, 장단점 블록), NotionRenderer(8종 블록 타입, 리스트 그루핑), CategoryFilter(Client, 탭 클릭 라우팅), SearchBar(Client, 실시간 필터) 구현 완료.",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "164791d3-9503-46b2-a915-6a7c63b179f8"
+        }
+      ],
+      "createdAt": "2026-06-09T14:52:45.366Z",
+      "updatedAt": "2026-06-09T14:55:21.831Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/review/ReviewDetail.tsx",
+          "type": "REFERENCE",
+          "description": "리뷰 상세"
+        },
+        {
+          "path": "src/components/review/NotionRenderer.tsx",
+          "type": "REFERENCE",
+          "description": "Notion 블록 렌더러"
+        },
+        {
+          "path": "src/components/review/CategoryFilter.tsx",
+          "type": "REFERENCE",
+          "description": "카테고리 필터"
+        },
+        {
+          "path": "src/components/search/SearchBar.tsx",
+          "type": "REFERENCE",
+          "description": "검색바"
+        }
+      ],
+      "implementationGuide": "완료된 작업. ReviewDetail/NotionRenderer는 Server Component. CategoryFilter/SearchBar는 Client Component. NotionRenderer는 groupBlocks()로 연속 리스트 ul/ol 그루핑 처리.",
+      "verificationCriteria": "4개 컴포넌트 모두 구현 확인됨.",
+      "analysisResult": "ROADMAP.md 5개 Phase 전체 반영. Phase 1~2는 코드베이스 실사 완료 확인(completed). Phase 3~5는 페이지 연동 미완료(pending). Next.js 16 async params, TailwindCSS v4, Server Component 우선, 모든 Notion API는 lib/notion.ts 집중 원칙 유지.",
+      "summary": "ReviewDetail(평점 막대+색상, 장단점 green/red 블록) Server Component 확인됨. NotionRenderer(8종 블록, groupBlocks 리스트 그루핑, RichText 인라인) 확인됨. CategoryFilter(useRouter 탭 라우팅) Client Component 확인됨. SearchBar(useState/useMemo 실시간 필터) Client Component 확인됨.",
+      "completedAt": "2026-06-09T14:55:21.830Z"
+    },
+    {
+      "id": "76073d8e-c0bf-451b-9de7-99bf1a6f9b6a",
+      "name": "[Phase 2 버그수정] notion.databases.query API 교체",
+      "description": "lib/notion.ts fetchPosts()의 notion.dataSources.query() 호출을 공식 API인 notion.databases.query()로 교체. 이 버그를 수정하지 않으면 Phase 3 전체가 런타임 에러 발생.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "6338c690-3a41-43db-aa32-661c7ced4110"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "src/lib/notion.ts",
+          "type": "TO_MODIFY",
+          "description": "fetchPosts API 호출 수정",
+          "lineStart": 152,
+          "lineEnd": 165
+        }
+      ],
+      "implementationGuide": "1. src/lib/notion.ts 152~165번 라인의 notion.dataSources.query() 를 notion.databases.query({ database_id: DATABASE_ID, filter: {...}, sorts: [...] }) 로 교체\n2. 응답 구조 동일(results 배열) — 이후 .filter/.map 로직 유지\n3. npm run type-check 에러 없음 확인",
+      "verificationCriteria": "notion.databases.query 호출로 교체됨. dataSources 관련 코드 없음. npm run type-check 에러 0건.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "56a1a384-295e-46ff-b7d3-e21eb0d665a0",
+      "name": "[Phase 3-1] 홈 페이지 Notion 데이터 연동",
+      "description": "app/page.tsx의 TODO를 실제 구현으로 교체. fetchPosts() 호출 후 SearchBar + CategoryFilter 통합. ISR revalidate:60 적용.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "76073d8e-c0bf-451b-9de7-99bf1a6f9b6a"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "홈 페이지 실 데이터 연동"
+        },
+        {
+          "path": "src/lib/notion.ts",
+          "type": "DEPENDENCY",
+          "description": "fetchPosts"
+        },
+        {
+          "path": "src/components/review/CategoryFilter.tsx",
+          "type": "DEPENDENCY",
+          "description": "CategoryItem[] props"
+        },
+        {
+          "path": "src/components/search/SearchBar.tsx",
+          "type": "DEPENDENCY",
+          "description": "ReviewPost[] props"
+        }
+      ],
+      "implementationGuide": "1. export const revalidate = 60 추가\n2. NOTION_API_KEY 환경변수 체크 후 fetchPosts() 호출, 실패 시 빈 배열 폴백\n3. posts에서 카테고리 파생(fetchCategories 재호출 불필요 — posts map으로 추출)\n4. CategoryFilter에 categories prop 전달\n5. SearchBar에 posts prop 전달 (SearchBar 내부에서 ReviewGrid 렌더링)\n6. TODO 주석 및 placeholder div 제거\n레이아웃: PageContainer > 타이틀 > CategoryFilter > SearchBar",
+      "verificationCriteria": "export const revalidate = 60 존재. fetchPosts() 호출됨. SearchBar + CategoryFilter 렌더링됨. TODO 주석 없음.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "865bb8df-370f-4a36-9802-7bf4aac28bcc",
+      "name": "[Phase 3-2] 카테고리 페이지 Notion 데이터 연동",
+      "description": "app/category/[slug]/page.tsx에 fetchPosts() 연동, slug 기준 필터링, generateStaticParams() 구현, ReviewGrid + CategoryFilter 통합.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "76073d8e-c0bf-451b-9de7-99bf1a6f9b6a"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/category/[slug]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "카테고리 페이지 연동"
+        },
+        {
+          "path": "src/lib/notion.ts",
+          "type": "DEPENDENCY",
+          "description": "fetchPosts, fetchCategories"
+        },
+        {
+          "path": "src/components/review/ReviewGrid.tsx",
+          "type": "DEPENDENCY",
+          "description": "ReviewPost[] props"
+        }
+      ],
+      "implementationGuide": "1. export const revalidate = 60 추가\n2. generateStaticParams(): fetchCategories() → { slug } 배열 반환\n3. CategoryPage: fetchPosts() → slug 필터(post.category.toLowerCase().replace(/\\s+/g,'-') === slug)\n4. 결과 0건이면 notFound() 호출\n5. CategoryFilter + ReviewGrid 렌더링\n6. generateMetadata: 기존 slug→label 변환 유지",
+      "verificationCriteria": "generateStaticParams 존재. slug 필터링 동작. 빈 카테고리 notFound(). revalidate = 60.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "ce47b9dd-d070-40f8-a977-602a38c3fca8",
+      "name": "[Phase 3-3] 글 상세 페이지 Notion 데이터 연동",
+      "description": "app/posts/[id]/page.tsx에 fetchPostDetail(id) 연동, ReviewDetail + NotionRenderer 통합, generateMetadata 완성, notFound() 처리.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "76073d8e-c0bf-451b-9de7-99bf1a6f9b6a"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/posts/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "글 상세 페이지 연동"
+        },
+        {
+          "path": "src/lib/notion.ts",
+          "type": "DEPENDENCY",
+          "description": "fetchPostDetail, fetchPostById"
+        },
+        {
+          "path": "src/components/review/ReviewDetail.tsx",
+          "type": "DEPENDENCY",
+          "description": "ReviewPost props"
+        },
+        {
+          "path": "src/components/review/NotionRenderer.tsx",
+          "type": "DEPENDENCY",
+          "description": "NotionBlock[] props"
+        }
+      ],
+      "implementationGuide": "1. export const revalidate = 300 추가\n2. const { id } = await params (Next.js 16 비동기)\n3. fetchPostDetail(id) 호출 — null이면 notFound()\n4. ReviewDetail에 post prop 전달\n5. NotionRenderer에 blocks prop 전달\n6. generateMetadata: fetchPostById(id) → title: post.title, description: post.pros\n레이아웃: PageContainer(max-w-3xl) > 뒤로가기 링크 > ReviewDetail > Separator > NotionRenderer",
+      "verificationCriteria": "revalidate = 300. fetchPostDetail 호출됨. ReviewDetail + NotionRenderer 렌더링됨. 미존재 ID → 404. generateMetadata에 실제 제목 반환.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "b8249d85-e176-46bb-828e-eef08d5a3e57",
+      "name": "[Phase 4-3] SEO: robots.ts 및 sitemap.ts 생성",
+      "description": "Next.js App Router 방식으로 robots.ts(MetadataRoute.Robots)와 sitemap.ts(동적 MetadataRoute.Sitemap) 생성. sitemap은 fetchPosts()로 발행 글 URL을 동적 생성.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "56a1a384-295e-46ff-b7d3-e21eb0d665a0"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/robots.ts",
+          "type": "CREATE",
+          "description": "robots.txt 동적 생성"
+        },
+        {
+          "path": "src/app/sitemap.ts",
+          "type": "CREATE",
+          "description": "sitemap.xml 동적 생성"
+        },
+        {
+          "path": "src/lib/notion.ts",
+          "type": "DEPENDENCY",
+          "description": "fetchPosts, fetchCategories"
+        }
+      ],
+      "implementationGuide": "1. app/robots.ts: MetadataRoute.Robots 반환 — rules: {userAgent:'*', allow:'/'}, host: 사이트 URL\n2. app/sitemap.ts: fetchPosts() 호출 → 홈(/) + 카테고리(/category/[slug]) + 글(/posts/[id]) URL 포함\n   - lastModified: post.published, changeFrequency: 'weekly', priority 설정\n   - NOTION_API_KEY 없으면 기본 URL만 반환\n3. 환경변수 NEXT_PUBLIC_SITE_URL 또는 하드코딩 URL 사용",
+      "verificationCriteria": "빌드 후 /robots.txt, /sitemap.xml 접근 가능. sitemap에 발행 글 URL 포함.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "65629664-6182-4bda-935d-8368b3d5d69e",
+      "name": "[Phase 5-1] 이미지 최적화 및 next.config 설정",
+      "description": "next.config.ts에 Notion 이미지 remotePatterns 등록. NotionRenderer의 <img> 태그를 Next.js <Image> 컴포넌트로 교체.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "ce47b9dd-d070-40f8-a977-602a38c3fca8"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": "next.config.ts",
+          "type": "TO_MODIFY",
+          "description": "Notion 이미지 remotePatterns"
+        },
+        {
+          "path": "src/components/review/NotionRenderer.tsx",
+          "type": "TO_MODIFY",
+          "description": "img → Next.js Image 교체",
+          "lineStart": 158,
+          "lineEnd": 192
+        }
+      ],
+      "implementationGuide": "1. next.config.ts images.remotePatterns에 추가:\n   - { protocol:'https', hostname:'*.notion.so' }\n   - { protocol:'https', hostname:'prod-files-secure.s3.us-west-2.amazonaws.com' }\n   - { protocol:'https', hostname:'s3.us-west-2.amazonaws.com' }\n2. NotionRenderer.tsx image 케이스의 <img> → Next.js Image 컴포넌트 교체\n   - width/height 또는 fill + relative container 사용\n   - sizes prop 설정\n3. webpack 설정 추가 금지(Turbopack 충돌)",
+      "verificationCriteria": "npm run build 에러 없음. NotionRenderer Image 컴포넌트 사용. no-img-element ESLint 경고 없음.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    },
+    {
+      "id": "1e6618e1-d247-447d-b3ac-17f2be145f74",
+      "name": "[Phase 5-3] 최종 빌드 검증 및 배포 준비",
+      "description": "TypeScript 타입 체크, ESLint, 프로덕션 빌드 순서로 실행해 에러 0건 확인. .env.local.example 파일 생성으로 Vercel 배포 환경변수 가이드 제공.",
+      "status": "pending",
+      "dependencies": [
+        {
+          "taskId": "65629664-6182-4bda-935d-8368b3d5d69e"
+        },
+        {
+          "taskId": "b8249d85-e176-46bb-828e-eef08d5a3e57"
+        }
+      ],
+      "createdAt": "2026-06-09T14:53:36.582Z",
+      "updatedAt": "2026-06-09T14:53:36.582Z",
+      "relatedFiles": [
+        {
+          "path": ".env.local.example",
+          "type": "CREATE",
+          "description": "환경변수 템플릿"
+        },
+        {
+          "path": ".gitignore",
+          "type": "REFERENCE",
+          "description": ".env.local 제외 확인"
+        },
+        {
+          "path": "next.config.ts",
+          "type": "REFERENCE",
+          "description": "빌드 설정 최종 확인"
+        }
+      ],
+      "implementationGuide": "1. npm run type-check → 에러 수정\n2. npm run lint → 에러 수정\n3. npm run build → 빌드 성공 확인\n4. .env.local.example 생성: NOTION_API_KEY= , NOTION_DATABASE_ID= 템플릿\n5. .gitignore에 .env.local 포함 여부 확인",
+      "verificationCriteria": "type-check, lint, build 모두 에러 0건. .env.local.example 존재. .gitignore에 .env.local 포함.",
+      "analysisResult": "Phase 3~5 잔여 작업. notion.databases.query 버그 수정이 Phase 3 전체의 선행 조건. Phase 3-1~3-3은 버그 수정 후 병렬 실행 가능."
+    }
+  ]
+}
