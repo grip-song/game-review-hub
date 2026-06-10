@@ -172,14 +172,13 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
 
       return (
         <figure className="mt-6">
-          <div className="relative w-full overflow-hidden rounded-lg">
-            {/* Notion 이미지 URL은 외부 도메인이므로 next.config에 remotePatterns 추가 필요 */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-muted">
+            <Image
               src={url}
               alt={caption.map((t) => t.plain_text).join("") || "게임 이미지"}
-              className="w-full object-cover"
-              loading="lazy"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 65vw"
             />
           </div>
           {caption.length > 0 && (

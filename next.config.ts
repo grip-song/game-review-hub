@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.amazonaws.com",
       },
+      // 나무위키 이미지
+      {
+        protocol: "https",
+        hostname: "i.namu.wiki",
+      },
     ],
   },
 
