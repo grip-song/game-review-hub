@@ -12,7 +12,10 @@ const nextConfig: NextConfig = {
   turbopack: {},
 
   // 이미지 최적화
+  // unoptimized: 나무위키 등 핫링킹 차단 사이트는 Vercel 서버가 fetch할 때 차단됨.
+  // 브라우저가 직접 이미지 URL에 접근하도록 최적화 비활성화.
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       // Notion 파일 저장소 (페이지 내 이미지)
