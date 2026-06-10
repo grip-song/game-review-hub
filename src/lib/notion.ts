@@ -8,8 +8,7 @@
  */
 
 import { Client } from '@notionhq/client'
-import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints/common'
-import type { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints/blocks'
+import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints'
 import type { ReviewPost, ReviewPostDetail, NotionBlock, NotionRichText, CategoryItem } from '@/types/notion'
 
 // ──────────────────────────────────────────────
@@ -71,8 +70,9 @@ function mapPageToReviewPost(page: PageObjectResponse): ReviewPost {
   const statusRaw = statusSelect?.name ?? ''
   const status: 'draft' | 'published' = statusRaw === '발행됨' ? 'published' : 'draft'
 
-  // Score number 속성
-  const score = getProp<number | null>('Score', 'number', null) ?? 0
+  // Score select 속성 (예: "7", "8.5" → number로 파싱)
+  const scoreSelect = getProp<{ name: string } | null>('Score', 'select', null)
+  const score = scoreSelect ? (parseFloat(scoreSelect.name) || 0) : 0
 
   // Pros rich_text 속성
   const prosArr = getProp<NotionRichText[]>('Pros', 'rich_text', [])
@@ -82,9 +82,13 @@ function mapPageToReviewPost(page: PageObjectResponse): ReviewPost {
   const consArr = getProp<NotionRichText[]>('Cons', 'rich_text', [])
   const cons = extractPlainText(consArr)
 
-  // Cover 이미지 (Notion 페이지 커버)
+  // Thumbnail URL 속성 (DB 필드 우선, 없으면 페이지 커버 폴백)
+  const thumbnailUrl = getProp<string | null>('Thumbnail', 'url', null)
+
   let coverImage: string | undefined
-  if (page.cover) {
+  if (thumbnailUrl) {
+    coverImage = thumbnailUrl
+  } else if (page.cover) {
     if (page.cover.type === 'external') {
       coverImage = page.cover.external.url
     } else if (page.cover.type === 'file') {
@@ -145,13 +149,10 @@ function mapBlockToNotionBlock(block: BlockObjectResponse): NotionBlock {
  * - Status = "발행됨" 필터 적용
  * - 발행일 내림차순 정렬
  * - ISR: 60초 캐시
- *
- * @notionhq/client v5+: databases.query 제거됨
- * → dataSources.query(data_source_id) 사용
  */
 export async function fetchPosts(): Promise<ReviewPost[]> {
-  const response = await notion.dataSources.query({
-    data_source_id: DATABASE_ID,
+  const response = await notion.databases.query({
+    database_id: DATABASE_ID,
     filter: {
       property: 'Status',
       select: { equals: '발행됨' },

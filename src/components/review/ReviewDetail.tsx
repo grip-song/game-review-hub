@@ -6,6 +6,7 @@
  * Server Component (상태 없음)
  */
 
+import Image from "next/image"
 import { Calendar, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -42,6 +43,21 @@ function scoreColor(score: number): string {
 export function ReviewDetail({ post }: ReviewDetailProps) {
   return (
     <article>
+      {/* 커버 이미지 — 원본 비율 그대로 표시 */}
+      {post.coverImage && (
+        <div className="w-full overflow-hidden rounded-xl mb-8">
+          <Image
+            src={post.coverImage}
+            alt={post.title}
+            width={1200}
+            height={900}
+            className="w-full h-auto"
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority
+          />
+        </div>
+      )}
+
       {/* 헤더 영역 */}
       <header className="mb-8">
         {/* 카테고리 뱃지 */}

@@ -38,7 +38,7 @@ export function ReviewCard({ post }: ReviewCardProps) {
       <Card className="h-full overflow-hidden transition-shadow hover:shadow-md">
         {/* 커버 이미지 영역 */}
         {post.coverImage ? (
-          <div className="relative aspect-video w-full overflow-hidden bg-muted">
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
             <Image
               src={post.coverImage}
               alt={post.title}
@@ -48,7 +48,7 @@ export function ReviewCard({ post }: ReviewCardProps) {
             />
           </div>
         ) : (
-          <div className="aspect-video w-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
+          <div className="aspect-[4/3] w-full bg-muted flex items-center justify-center text-muted-foreground text-xs">
             이미지 없음
           </div>
         )}
