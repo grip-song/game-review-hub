@@ -43,3 +43,9 @@ next-env.d.ts
 # playwright
 .playwright-mcp/
 screenshot-*.png
+*.png
+
+# claude agents & task manager
+.claude/agents/
+.claude/agent-memory/
+shrimp_data/
