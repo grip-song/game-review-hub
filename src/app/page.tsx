@@ -7,12 +7,37 @@
  */
 
 import { PageContainer } from "@/components/layout/page-container"
+import { SearchBar } from "@/components/search/SearchBar"
+import { fetchPosts } from "@/lib/notion"
+import type { CategoryItem, ReviewPost } from "@/types/notion"
+
+/** ISR: 1분 캐시 */
+export const revalidate = 60
 
 export default async function HomePage() {
-  /**
-   * Notion API 키가 설정되면 여기서 fetchPosts()를 호출합니다.
-   * Phase 3에서 ReviewGrid 컴포넌트 구현 후 교체 예정.
-   */
+  // Notion API 키 미설정 시 빈 배열로 폴백
+  let posts: ReviewPost[] = []
+  if (process.env.NOTION_API_KEY && process.env.NOTION_DATABASE_ID) {
+    try {
+      posts = await fetchPosts()
+    } catch (err) {
+      console.error("[홈 페이지] Notion API 호출 실패:", err)
+    }
+  }
+
+  // 글 목록에서 카테고리 목록 파생 (별도 API 호출 없음)
+  const categoryMap = new Map<string, number>()
+  for (const post of posts) {
+    if (!post.category) continue
+    categoryMap.set(post.category, (categoryMap.get(post.category) ?? 0) + 1)
+  }
+  const categories: CategoryItem[] = Array.from(categoryMap.entries())
+    .map(([label, count]) => ({
+      slug: label.toLowerCase().replace(/\s+/g, "-"),
+      label,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count)
 
   return (
     <PageContainer>
@@ -25,15 +50,8 @@ export default async function HomePage() {
           </p>
         </div>
 
-        {/* TODO (Phase 3): SearchBar + CategoryFilter + ReviewGrid 컴포넌트 추가 */}
-        <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="text-sm">
-            Notion API 연동 후 게임 리뷰 목록이 표시됩니다.
-          </p>
-          <p className="mt-1 text-xs">
-            .env.local에 NOTION_API_KEY와 NOTION_DATABASE_ID를 설정하세요.
-          </p>
-        </div>
+        {/* 카테고리 탭 + 검색창 + 리뷰 그리드 (F003, F004, F001) */}
+        <SearchBar posts={posts} categories={categories} />
       </div>
     </PageContainer>
   )

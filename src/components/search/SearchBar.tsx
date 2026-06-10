@@ -1,35 +1,61 @@
 "use client"
 
-/**
- * 키워드 검색 컴포넌트 (F004)
- * - 검색어 입력 시 제목 기준 실시간 클라이언트 사이드 필터링
- * - 홈 페이지 글 목록을 인라인 갱신 (페이지 이동 없음)
- * - 검색 결과 없을 경우 안내 메시지 표시
- * Client Component: useState, 사용자 입력 처리
- */
-
 import { useState, useMemo } from "react"
 import { Search, X } from "lucide-react"
 import { ReviewGrid } from "@/components/review/ReviewGrid"
-import type { ReviewPost } from "@/types/notion"
+import { cn } from "@/lib/utils"
+import type { ReviewPost, CategoryItem } from "@/types/notion"
 
 interface SearchBarProps {
-  /** 전체 게임 리뷰 목록 (서버에서 전달) */
   posts: ReviewPost[]
+  categories?: CategoryItem[]
 }
 
-export function SearchBar({ posts }: SearchBarProps) {
+export function SearchBar({ posts, categories = [] }: SearchBarProps) {
   const [query, setQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)
 
-  /** 검색어 기준 제목 필터링 (대소문자 무시) */
   const filtered = useMemo(() => {
+    let result = posts
+    if (activeCategory !== null) {
+      result = result.filter(
+        (post) => post.category.toLowerCase().replace(/\s+/g, "-") === activeCategory
+      )
+    }
     const trimmed = query.trim().toLowerCase()
-    if (!trimmed) return posts
-    return posts.filter((post) => post.title.toLowerCase().includes(trimmed))
-  }, [posts, query])
+    if (trimmed) {
+      result = result.filter((post) => post.title.toLowerCase().includes(trimmed))
+    }
+    return result
+  }, [posts, activeCategory, query])
+
+  const allTabs = [
+    { slug: null, label: "전체" },
+    ...categories.map((cat) => ({ slug: cat.slug, label: cat.label })),
+  ]
 
   return (
     <div>
+      {/* 카테고리 탭 (인라인 필터링) */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {allTabs.map((tab) => (
+            <button
+              key={tab.slug ?? "all"}
+              onClick={() => setActiveCategory(tab.slug)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                activeCategory === tab.slug
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* 검색 입력창 */}
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
@@ -40,7 +66,6 @@ export function SearchBar({ posts }: SearchBarProps) {
           placeholder="게임 제목으로 검색..."
           className="w-full rounded-lg border bg-background pl-9 pr-9 py-2 text-sm outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0 placeholder:text-muted-foreground"
         />
-        {/* 검색어 초기화 버튼 */}
         {query && (
           <button
             onClick={() => setQuery("")}
@@ -66,6 +91,8 @@ export function SearchBar({ posts }: SearchBarProps) {
         emptyMessage={
           query.trim()
             ? `"${query.trim()}"에 해당하는 리뷰가 없습니다.`
+            : activeCategory
+            ? "해당 카테고리의 리뷰가 없습니다."
             : "아직 등록된 리뷰가 없습니다."
         }
       />
