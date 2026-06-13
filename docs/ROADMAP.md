@@ -1,342 +1,302 @@
-# 게임 리뷰 블로그 개발 로드맵
+# 게임 리뷰 블로그 고도화 로드맵
 
-> PRD 기반 개발 계획 | 총 예상 기간: **9~14일**
+> MVP 완료 이후 고도화 개발 계획 | 대상 Phase: **Phase 6 ~ 8** | 총 예상 기간: **5~9일**
+
+게임 리뷰 블로그의 MVP(Phase 1~5)가 완료된 상태에서, 사용자 경험 개선·운영 편의성·확장성을 높이기 위한 고도화 단계를 정의합니다.
 
 ---
 
 ## 전체 타임라인
 
 ```
-Phase 1  ──────  Phase 2  ──────────  Phase 3  ──────────────  Phase 4  ──────────  Phase 5
-초기 설정          공통 모듈              핵심 기능               추가 기능              최적화·배포
- (1~2일)           (2~3일)               (3~4일)                 (2~3일)               (1~2일)
+[MVP 완료 ✅]                       [고도화 단계 — 본 문서 범위]
+Phase 1~5                Phase 6  ──────────  Phase 7  ──────────────  Phase 8
+초기설정·공통·핵심·       다크모드 + 공유링크    관리자 레이아웃           확장 기능
+추가기능·배포             (UI/UX 개선)          (어드민 기능)            (인증·필터·페이지네이션)
+(완료)                    (1~2일)               (2~3일)                 (2~4일)
+```
+
+| 단계 | 핵심 주제 | 예상 기간 | 상태 |
+|------|----------|----------|------|
+| Phase 1~5 | MVP (글 목록·상세·카테고리·검색·배포) | 9~14일 | ✅ 완료 |
+| **Phase 6** | 다크모드 + 리뷰 공유 링크 | 1~2일 | ⬜ 예정 |
+| **Phase 7** | 관리자 레이아웃 (리뷰 목록 뷰) | 2~3일 | ⬜ 예정 |
+| **Phase 8** | 확장 기능 (인증·태그 필터·페이지네이션) | 2~4일 | ⬜ 예정 |
+
+> MVP 상세 히스토리는 `docs/roadmaps/ROADMAP_v1.md`를 참고하세요.
+
+---
+
+## 기술 스택 (현행 유지)
+
+- **Next.js 16.2.6** (App Router, Turbopack 기본) — `params`/`searchParams`/`cookies()`/`headers()` 모두 비동기 접근 (`await` 필수)
+- **React 19.2.4**, **TypeScript 5.6+**
+- **TailwindCSS v4** (설정 파일 없는 엔진), **shadcn/ui** (`radix-nova` 스타일), **Lucide React**
+- **next-themes** (다크모드, 이미 설치·`Providers`에 마운트됨)
+- **Sonner** (토스트, 이미 `Providers`에 `<Toaster />` 마운트됨)
+- **@notionhq/client** (Notion CMS 연동)
+- **Vercel** 배포
+
+---
+
+## Phase 6: 다크모드 + 리뷰 공유 링크 (1~2일)
+
+### 목표
+
+이미 설치·마운트되어 있으나 UI에 노출되지 않은 다크모드 토글을 활성화하고, 글 상세 페이지에 공유 링크 복사 기능을 추가해 사용자 경험을 개선한다. 인프라(`ThemeProvider`, `Toaster`)가 이미 갖춰져 있어 비교적 빠르게 완료 가능하다.
+
+### 작업 목록
+
+#### 6-1. 다크모드 토글 헤더 적용
+
+- [ ] `src/components/theme-toggle.tsx` 동작 검증 (`next-themes`의 `useTheme` 사용, 라이트/다크/시스템 순환 또는 토글)
+- [ ] `src/components/layout/header.tsx`에 `<ThemeToggle />` 배치
+  - 데스크톱: 카테고리 탭 우측 영역에 아이콘 버튼으로 배치
+  - 모바일: `SheetContent` 내부 하단 또는 헤더 우측에 배치
+- [ ] 하이드레이션 불일치 방지 (`next-themes`는 클라이언트에서만 테마 확정 → `mounted` 가드 또는 `suppressHydrationWarning` 확인)
+- [ ] `src/app/layout.tsx`의 `<html>` 태그에 `suppressHydrationWarning` 적용 여부 확인
+
+#### 6-2. TailwindCSS v4 다크모드 스타일 점검
+
+- [ ] `Providers`의 `ThemeProvider attribute="class"` 설정과 Tailwind v4 다크 변형 연동 확인
+- [ ] 전역 CSS(`globals.css`)에 `.dark` CSS 변수 토큰 정의 확인 (배경·전경·뱃지·카드 색상)
+- [ ] 주요 컴포넌트 다크모드 가독성 검수
+  - `ReviewCard`, `ReviewGrid`, `ReviewDetail`, `NotionRenderer`
+  - `Header`, `Footer`, `Badge`, `Separator`
+  - 본문 코드 블록(`<pre><code>`)·인용(`<blockquote>`) 대비 확인
+
+#### 6-3. 리뷰 공유 링크 복사 기능
+
+- [ ] `src/components/review/ShareButton.tsx` 신규 생성 (Client Component, `"use client"`)
+  - 현재 페이지 URL을 `navigator.clipboard.writeText()`로 복사
+  - 복사 성공 시 Sonner `toast.success("링크가 복사되었습니다")` 호출
+  - 복사 실패 시 `toast.error()` 폴백 처리
+- [ ] 모바일 Web Share API 분기 처리
+  - `navigator.share` 지원 시 네이티브 공유 시트 호출 (제목·URL 전달)
+  - 미지원 시 클립보드 복사로 폴백
+- [ ] `src/components/review/ReviewDetail.tsx` 헤더 영역에 `<ShareButton />` 통합
+- [ ] 소셜 공유 확장 대비 구조 설계 (props로 공유 채널 확장 가능하도록 인터페이스 정의 — 실제 구현은 백로그)
+
+### 예상 소요 시간
+
+| 작업 | 소요 시간 |
+|------|----------|
+| 다크모드 토글 헤더 적용 | 2~3시간 |
+| TailwindCSS v4 다크모드 점검 | 2~3시간 |
+| 공유 링크 복사 기능 | 3~4시간 |
+| **합계** | **7~10시간 (1~2일)** |
+
+### 완료 기준
+
+- 헤더의 토글 버튼으로 라이트/다크 모드가 전환되며, 새로고침 후에도 선택이 유지된다.
+- 다크모드에서 모든 페이지(홈·카테고리·상세)의 텍스트·뱃지·카드 대비가 충분하다 (가독성 깨짐 없음).
+- 하이드레이션 경고가 콘솔에 출력되지 않는다.
+- 글 상세 페이지에서 공유 버튼 클릭 시 URL이 클립보드에 복사되고 토스트가 표시된다.
+- 모바일 환경(Web Share API 지원)에서 네이티브 공유 시트가 정상 호출된다.
+
+---
+
+## Phase 7: 관리자 레이아웃 — 리뷰 목록 뷰 (2~3일)
+
+### 목표
+
+블로그 운영자가 Notion DB의 전체 리뷰(초안 포함)를 한눈에 관리할 수 있는 관리자 전용 화면을 제공한다. 일반 블로그 레이아웃과 분리된 `(admin)` Route Group을 구성하고, 간단한 환경변수 기반 패스워드 보호를 적용한다.
+
+### 작업 목록
+
+#### 7-1. Route Group 및 관리자 레이아웃 골격
+
+- [ ] `src/app/(admin)/` Route Group 디렉터리 생성 (URL 경로에 `(admin)` 미포함)
+- [ ] `src/app/(admin)/layout.tsx` — 관리자 전용 레이아웃
+  - 일반 블로그 `Header`/`Footer` 제외, 관리자 전용 사이드바/헤더 구성
+  - `src/components/admin/AdminSidebar.tsx` (네비게이션: 리뷰 목록 등)
+  - `src/components/admin/AdminHeader.tsx` (관리자 표시, 로그아웃 자리)
+- [ ] `src/app/(admin)/admin/reviews/page.tsx` — 리뷰 목록 페이지 (Server Component)
+
+#### 7-2. 전체 리뷰 조회 (초안 포함) Notion 함수
+
+- [ ] `src/lib/notion.ts`에 `fetchAllPosts()` 추가
+  - 기존 `fetchPosts()`와 달리 Status 필터 없이 전체 행 조회 (초안 + 발행됨)
+  - 발행일 내림차순 정렬 유지
+  - 관리자 화면은 최신 데이터가 중요 → `revalidate` 짧게 또는 `cache: 'no-store'` 검토
+- [ ] Notion 페이지 URL 파생 유틸 추가 (`notion.so/{id}` 형태 바로가기 링크 생성)
+- [ ] `src/types/notion.ts`에 관리자용 타입 확장 (`AdminReviewRow` 등, Notion 페이지 URL 포함)
+
+#### 7-3. 리뷰 목록 테이블 UI
+
+- [ ] shadcn `Table` 컴포넌트 설치 (`npx shadcn add table`)
+- [ ] `src/components/admin/ReviewTable.tsx` 구현
+  - 컬럼: 제목 / 카테고리 / 상태(초안·발행됨 뱃지) / 발행일 / 평점 / Notion 바로가기
+  - 상태별 뱃지 색상 구분 (발행됨=primary, 초안=muted)
+  - "Notion에서 열기" 외부 링크 버튼 (`target="_blank"`, `rel="noopener noreferrer"`)
+  - 빈 상태(empty state) 메시지 처리
+- [ ] 글 상세 미리보기 링크 (발행됨 글은 `/posts/[id]`로 연결)
+
+#### 7-4. 환경변수 기반 패스워드 보호
+
+- [ ] `.env.local`에 `ADMIN_PASSWORD` 추가 (`.env.local.example`에도 키 반영)
+- [ ] `src/middleware.ts` 또는 라우트 가드로 `(admin)` 경로 보호
+  - 쿠키 기반 간단 세션 (`cookies()`는 비동기 → `await cookies()`)
+  - Next.js 16 비동기 API 패턴 준수
+- [ ] `src/app/(admin)/admin/login/page.tsx` — 간단 패스워드 입력 화면
+  - Server Action으로 패스워드 검증 후 인증 쿠키 설정
+  - 실패 시 에러 메시지 표시
+- [ ] 미인증 접근 시 로그인 페이지로 리다이렉트
+
+#### 7-5. 테스트 체크리스트 (Playwright MCP)
+
+- [ ] 미인증 상태에서 `/admin/reviews` 접근 → 로그인 페이지 리다이렉트 검증
+- [ ] 올바른 패스워드 입력 → 리뷰 목록 진입 검증
+- [ ] 잘못된 패스워드 입력 → 에러 메시지 표시 검증
+- [ ] 리뷰 목록 테이블에 초안 + 발행됨 글이 모두 표시되는지 검증
+- [ ] "Notion에서 열기" 링크가 올바른 URL을 가리키는지 검증
+
+### 예상 소요 시간
+
+| 작업 | 소요 시간 |
+|------|----------|
+| Route Group · 관리자 레이아웃 골격 | 2~3시간 |
+| 전체 리뷰 조회 Notion 함수 | 2~3시간 |
+| 리뷰 목록 테이블 UI | 3~4시간 |
+| 패스워드 보호 (미들웨어·로그인) | 3~5시간 |
+| Playwright MCP 테스트 | 2~3시간 |
+| **합계** | **12~18시간 (2~3일)** |
+
+### 완료 기준
+
+- `(admin)` Route Group이 일반 블로그 레이아웃과 분리되어 독립 레이아웃으로 렌더링된다.
+- `/admin/reviews`에서 초안 포함 전체 리뷰가 테이블로 표시된다.
+- 각 행에서 Notion 원본 페이지로 바로 이동할 수 있다.
+- 환경변수 패스워드 없이는 관리자 페이지에 접근할 수 없다.
+- Playwright MCP E2E 테스트 시나리오가 모두 통과한다.
+- `npm run build` 에러 및 TypeScript 에러 0건.
+
+---
+
+## Phase 8: 확장 기능 (2~4일)
+
+### 목표
+
+백로그 항목 중 운영 가치가 높은 기능을 선별해 구현한다. 콘텐츠 누적에 따른 탐색성·접근 제어를 강화한다. 작업 단위가 독립적이므로 우선순위에 따라 부분 선택 적용 가능하다.
+
+### 작업 목록
+
+#### 8-1. 정식 관리자 인증 도입 (선택)
+
+- [ ] Phase 7의 간이 패스워드 보호를 정식 인증으로 승격 검토
+  - 옵션 A: `next-auth`(Auth.js) 도입 — Credentials 또는 OAuth
+  - 옵션 B: 환경변수 다중 계정 + 세션 강화
+- [ ] 세션 만료·로그아웃 처리 구현
+- [ ] **테스트 체크리스트 (Playwright MCP)**: 로그인 → 세션 유지 → 로그아웃 → 재인증 플로우 검증
+
+#### 8-2. 태그 기반 필터링 (`F003` 확장)
+
+- [ ] `src/components/review/TagFilter.tsx` 신규 (Client Component)
+  - Notion `multi_select` 태그 목록을 파생해 필터 칩으로 표시
+  - 다중 태그 선택 시 AND/OR 동작 정의
+- [ ] 홈/카테고리 페이지에서 태그 필터와 카테고리 필터 조합 동작
+- [ ] URL 쿼리스트링 연동 (`?tag=오픈월드`) — `searchParams`는 비동기 (`await searchParams`)
+- [ ] **테스트 체크리스트 (Playwright MCP)**: 태그 선택 → 목록 필터링 → URL 동기화 검증
+
+#### 8-3. 페이지네이션 / 무한 스크롤
+
+- [ ] 글 수 증가 대비 목록 분할 전략 결정 (페이지네이션 vs 무한 스크롤)
+- [ ] Notion `databases.query`의 `start_cursor`·`page_size` 기반 커서 페이징 구현
+- [ ] `src/components/review/Pagination.tsx` 또는 무한 스크롤 로더 구현
+- [ ] 홈·카테고리·관리자 목록에 적용
+- [ ] **테스트 체크리스트 (Playwright MCP)**: 다음 페이지 로드 → 누적 표시 → 마지막 페이지 처리 검증
+
+#### 8-4. 성능·SEO 재점검
+
+- [ ] 신규 기능 추가 후 Lighthouse 재측정 (Performance 75+, SEO 90+ 유지)
+- [ ] 관리자 페이지 `noindex` 메타데이터 적용 (검색 노출 차단)
+- [ ] 다크모드 OG 이미지·테마 컬러 메타 점검
+
+### 예상 소요 시간
+
+| 작업 | 소요 시간 |
+|------|----------|
+| 정식 관리자 인증 (선택) | 4~6시간 |
+| 태그 기반 필터링 | 3~5시간 |
+| 페이지네이션 / 무한 스크롤 | 4~6시간 |
+| 성능·SEO 재점검 | 2~3시간 |
+| **합계** | **13~20시간 (2~4일, 선택 적용 시 단축)** |
+
+### 완료 기준
+
+- (인증 적용 시) 정식 로그인/로그아웃 플로우가 동작하고 세션이 안전하게 관리된다.
+- 태그 필터로 글 목록이 정확히 필터링되고 URL과 동기화된다.
+- 글이 많아져도 페이지네이션/무한 스크롤로 목록이 끊김 없이 탐색된다.
+- 관리자 페이지가 검색 엔진에 노출되지 않는다.
+- Lighthouse Performance 75점 이상, SEO 90점 이상 유지.
+- Playwright MCP E2E 테스트 시나리오가 모두 통과한다.
+
+---
+
+## 신규 파일 구조 (고도화 추가분)
+
+```
+src/
+├── app/
+│   └── (admin)/                       # [Phase 7] 관리자 Route Group (URL 경로 미포함)
+│       ├── layout.tsx                 # 관리자 전용 레이아웃 (블로그 레이아웃과 분리)
+│       └── admin/
+│           ├── login/page.tsx         # [Phase 7] 패스워드 로그인 화면
+│           └── reviews/page.tsx       # [Phase 7] 리뷰 목록 (초안 포함)
+├── components/
+│   ├── theme-toggle.tsx               # [Phase 6] 기존 컴포넌트 → 헤더에 적용
+│   ├── review/
+│   │   ├── ShareButton.tsx            # [Phase 6] 공유 링크 복사 버튼
+│   │   ├── TagFilter.tsx              # [Phase 8] 태그 필터 (선택)
+│   │   └── Pagination.tsx             # [Phase 8] 페이지네이션 (선택)
+│   └── admin/                         # [Phase 7] 관리자 전용 컴포넌트
+│       ├── AdminSidebar.tsx
+│       ├── AdminHeader.tsx
+│       └── ReviewTable.tsx
+├── lib/
+│   └── notion.ts                      # [Phase 7] fetchAllPosts() 추가
+├── types/
+│   └── notion.ts                      # [Phase 7] AdminReviewRow 타입 추가
+└── middleware.ts                      # [Phase 7] (admin) 경로 보호
 ```
 
 ---
 
-## Phase 1: 프로젝트 초기 설정 (1~2일)
+## Phase ↔ 주제 매핑
 
-### 목표
-
-견고한 개발 기반을 마련해 이후 기능 개발이 원활하게 진행될 수 있도록 한다.
-
-### 작업 목록
-
-#### 1-1. 프로젝트 구조 정리
-
-- [ ] `src/app/` 라우트 디렉터리 구성
-  - `layout.tsx` — 루트 레이아웃
-  - `page.tsx` — 홈 페이지 진입점
-  - `category/[slug]/page.tsx` — 카테고리 페이지
-  - `posts/[id]/page.tsx` — 글 상세 페이지
-- [ ] `src/components/` 서브디렉터리 생성 (`layout/`, `review/`, `search/`)
-- [ ] `src/lib/` 디렉터리 생성 (`notion.ts`, `utils.ts`)
-- [ ] `src/types/` 디렉터리 생성 및 TypeScript 타입 파일 초기화
-
-#### 1-2. Notion API 연동 환경 구축
-
-- [ ] `@notionhq/client` 패키지 설치
-  ```bash
-  npm install @notionhq/client
-  ```
-- [ ] `.env.local` 파일 생성 및 환경 변수 설정
-  ```
-  NOTION_API_KEY=secret_xxxx
-  NOTION_DATABASE_ID=xxxx
-  ```
-- [ ] `.env.local`을 `.gitignore`에 포함 확인
-
-#### 1-3. 기본 레이아웃 구조 생성
-
-- [ ] `app/layout.tsx` — Providers, Header, Footer 마운트 구조 확정
-- [ ] `components/layout/Header.tsx` 스켈레톤 (로고 + 내비게이션 자리)
-- [ ] `components/layout/Footer.tsx` 스켈레톤 (사이트명, 제작자 정보)
-
-### 예상 소요 시간
-
-| 작업 | 소요 시간 |
-|------|----------|
-| 프로젝트 구조 정리 | 2~3시간 |
-| Notion API 환경 구축 | 1~2시간 |
-| 기본 레이아웃 스켈레톤 | 2~3시간 |
-| **합계** | **5~8시간 (1~2일)** |
-
-### 완료 기준
-
-- `npm run dev` 실행 시 에러 없이 빈 홈 페이지가 렌더링된다.
-- `.env.local`의 `NOTION_API_KEY`로 Notion API 연결을 콘솔에서 확인할 수 있다.
-- Header, Footer가 레이아웃에 포함되어 모든 페이지에 노출된다.
+| Phase | 주제 | 신규 주요 산출물 | 의존성 |
+|-------|------|-----------------|--------|
+| Phase 6 | 다크모드 + 공유 링크 | `theme-toggle` 적용, `ShareButton.tsx` | MVP 인프라(Providers) 재사용 |
+| Phase 7 | 관리자 레이아웃 | `(admin)` Route Group, `ReviewTable.tsx`, `middleware.ts` | `lib/notion.ts` 확장 |
+| Phase 8 | 확장 기능 | `TagFilter`, `Pagination`, 정식 인증 | Phase 7 인증 골격 위에 확장 |
 
 ---
 
-## Phase 2: 공통 모듈 개발 (2~3일)
+## MVP 완료 후 전체 백로그
 
-### 목표
+PRD에서 명시적으로 제외되었거나 고도화 Phase에 일부 포함된 항목입니다. 우선순위에 따라 위 Phase로 승격합니다.
 
-모든 기능에서 재사용되는 코어 코드를 먼저 작성해 이후 중복 개발을 방지한다.
-
-### 작업 목록
-
-#### 2-1. TypeScript 공통 타입 정의
-
-- [ ] `src/types/notion.ts` 작성
-
-  ```typescript
-  interface ReviewPost {
-    id: string
-    title: string
-    category: string
-    tags: string[]
-    published: string      // ISO 날짜 문자열
-    status: 'draft' | 'published'
-    score: number
-    pros: string
-    cons: string
-  }
-
-  interface ReviewPostDetail extends ReviewPost {
-    blocks: NotionBlock[]  // 본문 블록 배열
-  }
-  ```
-
-- [ ] 지원 Notion 블록 타입 유니온 정의
-  (`paragraph` | `heading_1` | `heading_2` | `heading_3` | `bulleted_list_item` | `numbered_list_item` | `image` | `quote` | `code` | `divider`)
-
-#### 2-2. Notion API 공통 함수 (`lib/notion.ts`)
-
-- [ ] Notion 클라이언트 초기화 (싱글톤)
-- [ ] `fetchPosts()` — Status="발행됨" 필터 + 발행일 내림차순, `revalidate: 60`
-- [ ] `fetchPostById(id)` — 페이지 속성 조회, `revalidate: 300`
-- [ ] `fetchPostBlocks(id)` — 페이지 블록 목록 조회
-- [ ] Notion API 응답 → `ReviewPost` / `ReviewPostDetail` 변환 유틸리티
-
-#### 2-3. 공통 UI 컴포넌트
-
-- [ ] `components/review/ReviewCard.tsx`
-  - 제목, 카테고리 뱃지(shadcn `Badge`), 발행일, 평점 표시
-  - 클릭 시 `/posts/[id]` 이동
-- [ ] `components/review/ReviewGrid.tsx`
-  - `ReviewCard` 목록을 반응형 그리드로 배치 (모바일 1열 → 태블릿 2열 → 데스크톱 3열)
-  - 빈 상태(empty state) 메시지 처리
-
-#### 2-4. Header 카테고리 탭 연동 준비
-
-- [ ] `Header.tsx`에 카테고리 목록을 props로 받을 수 있도록 구조화
-- [ ] 활성 카테고리 하이라이트 스타일 적용
-
-### 예상 소요 시간
-
-| 작업 | 소요 시간 |
-|------|----------|
-| TypeScript 타입 정의 | 1~2시간 |
-| Notion API 공통 함수 | 4~6시간 |
-| ReviewCard / ReviewGrid | 3~4시간 |
-| Header 카테고리 준비 | 1~2시간 |
-| **합계** | **9~14시간 (2~3일)** |
-
-### 완료 기준
-
-- `fetchPosts()`를 호출하면 Notion DB에서 발행된 글 목록이 `ReviewPost[]` 형태로 반환된다.
-- `fetchPostById(id)`를 호출하면 해당 글의 속성과 블록이 반환된다.
-- `ReviewCard`가 Storybook 없이도 단독으로 임의 데이터로 렌더링된다.
-- TypeScript 컴파일 에러 0건.
+| 항목 | 상태 | 비고 |
+|------|------|------|
+| 다크모드 토글 | 🔜 Phase 6 | 본 로드맵에서 구현 |
+| 리뷰 공유 링크 | 🔜 Phase 6 | 본 로드맵에서 구현 |
+| 관리자 리뷰 목록 | 🔜 Phase 7 | 본 로드맵에서 구현 |
+| 회원가입 / 로그인 (인증) | 🔜 Phase 7~8 | 간이 → 정식 단계적 도입 |
+| 태그 기반 필터링 | 🔜 Phase 8 | 선택 적용 |
+| 페이지네이션 | 🔜 Phase 8 | 선택 적용 |
+| 댓글 기능 | ⬜ 백로그 | 외부 서비스(Giscus 등) 검토 |
+| 좋아요 / 북마크 | ⬜ 백로그 | 사용자 상태 저장소 필요 |
+| RSS 피드 | ⬜ 백로그 | `app/feed.xml/route.ts` 검토 |
+| 소셜 공유 확장 (X·카카오톡) | ⬜ 백로그 | Phase 6 `ShareButton` 구조 위에 확장 |
 
 ---
 
-## Phase 3: 핵심 기능 개발 (3~4일)
+## 개발 워크플로우 (고도화 단계 공통)
 
-### 목표
+1. **작업 계획** — 기존 코드베이스 현황 파악 후 본 `ROADMAP.md`에 작업 반영
+2. **작업 구현** — Next.js 16 비동기 API 패턴(`await params`/`searchParams`/`cookies()`) 준수
+3. **테스트** — API 연동·비즈니스 로직·인증 플로우는 Playwright MCP로 E2E 검증 필수
+4. **로드맵 업데이트** — 완료 작업을 ✅로 표시하고 상태 표를 갱신
+5. **빌드 검증** — `npm run build`(Turbopack) 에러 0건 확인 후 Vercel 배포
 
-블로그의 본질인 글 목록 조회와 상세 읽기 기능을 완성한다. 이 Phase가 완료되면 실질적으로 동작하는 블로그가 된다.
-
-### 작업 목록
-
-#### 3-1. 홈 페이지 글 목록 (`F001`)
-
-- [ ] `app/page.tsx` Server Component
-  - `fetchPosts()` 호출 후 `ReviewGrid`에 전달
-  - Notion에서 카테고리 목록 파생 (별도 API 호출 없음)
-- [ ] ISR `revalidate: 60` 적용 확인
-
-#### 3-2. 카테고리 페이지 (`F001`, `F003`)
-
-- [ ] `app/category/[slug]/page.tsx` Server Component
-  - `params.slug`로 카테고리 필터링
-  - 해당 카테고리 글 없을 경우 empty state 표시
-  - 현재 카테고리명 헤딩 표시
-- [ ] `generateStaticParams()` 구현 (빌드 시 카테고리 슬러그 사전 생성)
-
-#### 3-3. 글 상세 페이지 (`F002`)
-
-- [ ] `app/posts/[id]/page.tsx` Server Component
-  - `fetchPostById(id)` + `fetchPostBlocks(id)` 병렬 호출
-  - ISR `revalidate: 300` 적용
-- [ ] `components/review/ReviewDetail.tsx`
-  - 제목, 카테고리 뱃지, 태그 목록, 발행일 헤더
-  - 평점 섹션: Score를 10점 만점 시각화 (숫자 + 시각적 표시)
-  - 장단점 섹션: Pros / Cons 블록 구분 표시
-- [ ] **목록으로 돌아가기** 링크 구현
-
-#### 3-4. Notion 블록 렌더러 (`F002`, `F010`)
-
-- [ ] `components/review/NotionRenderer.tsx`
-  - `paragraph` → `<p>`
-  - `heading_1/2/3` → `<h1/h2/h3>`
-  - `bulleted_list_item` → `<ul><li>`
-  - `numbered_list_item` → `<ol><li>`
-  - `image` → Next.js `<Image>` 컴포넌트
-  - `quote` → `<blockquote>`
-  - `code` → `<pre><code>`
-  - `divider` → `<hr>`
-  - 미지원 블록 타입은 무시 처리 (에러 방지)
-
-### 예상 소요 시간
-
-| 작업 | 소요 시간 |
-|------|----------|
-| 홈 페이지 글 목록 | 2~3시간 |
-| 카테고리 페이지 | 3~4시간 |
-| 글 상세 페이지 | 3~4시간 |
-| NotionRenderer | 4~6시간 |
-| **합계** | **12~17시간 (3~4일)** |
-
-### 완료 기준
-
-- 홈 페이지에서 Notion DB의 발행된 글이 카드로 표시된다.
-- 카드 클릭 시 `/posts/[id]`로 이동해 Notion 본문이 렌더링된다.
-- 카테고리 페이지에서 해당 카테고리 글만 필터링되어 표시된다.
-- 8가지 Notion 블록 타입이 모두 올바르게 렌더링된다.
-- 모바일(375px)과 데스크톱(1280px)에서 레이아웃 깨짐 없음.
-
----
-
-## Phase 4: 추가 기능 개발 (2~3일)
-
-### 목표
-
-핵심 기능 위에 탐색 편의성을 높이는 부가 기능을 추가하고, 검색 엔진 노출을 위한 SEO를 적용한다.
-
-### 작업 목록
-
-#### 4-1. 카테고리 필터 탭 완성 (`F003`)
-
-- [ ] `components/review/CategoryFilter.tsx` Client Component
-  - Notion DB에서 파생된 카테고리 목록을 탭/버튼으로 표시
-  - "전체" 탭 포함
-  - 현재 선택된 카테고리 하이라이트
-  - 탭 클릭 시 `/category/[slug]` 라우팅 또는 홈에서 인라인 필터링
-- [ ] `Header.tsx`에 `CategoryFilter` 통합
-
-#### 4-2. 키워드 검색 기능 (`F004`)
-
-- [ ] `components/search/SearchBar.tsx` Client Component
-  - 검색어 입력 시 제목 기준 실시간 클라이언트 사이드 필터링
-  - 홈 페이지 글 목록 인라인 갱신 (페이지 이동 없음)
-  - 검색 결과 없을 경우 안내 메시지 표시
-- [ ] `Header.tsx`에 검색창 배치
-
-#### 4-3. SEO 최적화
-
-- [ ] `app/layout.tsx` 글로벌 메타데이터 설정 (`title`, `description`, `openGraph`)
-- [ ] `app/posts/[id]/page.tsx` — `generateMetadata()` 구현
-  - 글 제목을 `<title>`로, pros/cons 요약을 `description`으로 활용
-- [ ] `app/category/[slug]/page.tsx` — 카테고리별 메타데이터
-- [ ] `robots.txt`, `sitemap.xml` 생성 (`next/sitemap` 또는 수동)
-
-### 예상 소요 시간
-
-| 작업 | 소요 시간 |
-|------|----------|
-| CategoryFilter 완성 | 2~3시간 |
-| SearchBar 구현 | 3~4시간 |
-| SEO 최적화 | 2~3시간 |
-| **합계** | **7~10시간 (2~3일)** |
-
-### 완료 기준
-
-- 검색창에 키워드 입력 시 홈 페이지 카드 목록이 실시간으로 필터링된다.
-- 카테고리 탭 클릭 시 해당 카테고리 글만 표시된다 (홈 인라인 또는 카테고리 페이지).
-- 글 상세 페이지의 `<title>`이 해당 게임 리뷰 제목으로 표시된다.
-- Lighthouse SEO 점수 90점 이상.
-
----
-
-## Phase 5: 최적화 및 배포 (1~2일)
-
-### 목표
-
-완성된 기능의 품질을 높이고 Vercel에 배포해 실제 서비스를 런칭한다.
-
-### 작업 목록
-
-#### 5-1. 성능 최적화
-
-- [ ] Notion API 응답 캐싱 전략 검토 및 확정
-  - 글 목록: `revalidate: 60` (1분)
-  - 글 상세: `revalidate: 300` (5분)
-- [ ] Next.js `<Image>` 컴포넌트로 이미지 최적화 적용 확인
-- [ ] 불필요한 클라이언트 번들 최소화 (`"use client"` 범위 최소화)
-- [ ] Lighthouse Performance 점수 측정 및 개선
-
-#### 5-2. 반응형 디자인 최종 검증 (`F011`)
-
-- [ ] 375px (모바일) — 단일 컬럼, 터치 타겟 크기 확인
-- [ ] 768px (태블릿) — 2열 그리드, 헤더 레이아웃
-- [ ] 1280px (데스크톱) — 3열 그리드, 최대 너비 제한
-- [ ] 글 상세 본문 최대 너비 제한으로 가독성 확보
-
-#### 5-3. Vercel 배포
-
-- [ ] Vercel 프로젝트 연결 (GitHub 저장소 연동)
-- [ ] Vercel 환경 변수 등록
-  - `NOTION_API_KEY`
-  - `NOTION_DATABASE_ID`
-- [ ] 프로덕션 빌드 성공 확인 (`npm run build` 에러 0건)
-- [ ] 배포 URL에서 전체 사용자 여정 E2E 검증
-  1. 홈 페이지 → 카드 목록 표시 확인
-  2. 카드 클릭 → 글 상세 렌더링 확인
-  3. 카테고리 탭 → 필터링 확인
-  4. 검색창 → 실시간 필터링 확인
-
-### 예상 소요 시간
-
-| 작업 | 소요 시간 |
-|------|----------|
-| 성능 최적화 | 2~3시간 |
-| 반응형 최종 검증 | 1~2시간 |
-| Vercel 배포 및 E2E 검증 | 2~3시간 |
-| **합계** | **5~8시간 (1~2일)** |
-
-### 완료 기준
-
-- `npm run build` 에러 및 TypeScript 에러 0건.
-- Vercel 배포 URL에서 전체 사용자 여정이 에러 없이 동작한다.
-- 모바일(375px) / 데스크톱(1280px) 반응형 레이아웃 이상 없음.
-- Lighthouse Performance 75점 이상, SEO 90점 이상.
-
----
-
-## 기능 ID ↔ Phase 매핑
-
-| 기능 ID | 기능명 | 구현 Phase |
-|---------|--------|-----------|
-| F010 | Notion API 연동 | Phase 1~2 |
-| F001 | Notion 글 목록 조회 | Phase 3 |
-| F002 | 글 상세 표시 | Phase 3 |
-| F003 | 카테고리 필터링 | Phase 3~4 |
-| F004 | 키워드 검색 | Phase 4 |
-| F011 | 반응형 레이아웃 | Phase 3~5 |
-
----
-
-## MVP 완료 후 백로그 (Phase 이후)
-
-PRD에서 명시적으로 제외된 기능이며, MVP 검증 후 필요 시 추가한다.
-
-- 댓글 기능
-- 좋아요 / 북마크
-- 회원가입 / 로그인
-- RSS 피드
-- 태그 기반 필터링
-- 페이지네이션
-- 다크모드 토글
+> ⚠️ Next.js 16 주의: `webpack` 설정 금지(Turbopack 기본), `next lint` 대신 `eslint` CLI 직접 호출, turbopack 설정은 `nextConfig.turbopack` 최상위 레벨.
