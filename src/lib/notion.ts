@@ -8,8 +8,9 @@
  */
 
 import { Client } from '@notionhq/client'
+import { unstable_noStore } from 'next/cache'
 import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints'
-import type { ReviewPost, ReviewPostDetail, NotionBlock, NotionRichText, CategoryItem } from '@/types/notion'
+import type { ReviewPost, ReviewPostDetail, NotionBlock, NotionRichText, CategoryItem, AdminReviewRow } from '@/types/notion'
 
 // ──────────────────────────────────────────────
 // Notion 클라이언트 싱글톤 초기화
@@ -228,6 +229,33 @@ export async function fetchCategories(): Promise<CategoryItem[]> {
       count,
     }))
     .sort((a, b) => b.count - a.count)
+}
+
+/**
+ * Notion 페이지 ID로 notion.so 바로가기 URL 생성
+ * @param id Notion 페이지 UUID (하이픈 포함/미포함 모두 허용)
+ */
+export function getNotionPageUrl(id: string): string {
+  return `https://www.notion.so/${id.replace(/-/g, '')}`
+}
+
+/**
+ * 전체 게임 리뷰 조회 (초안 포함, 캐시 없음)
+ * 관리자 페이지 전용 — unstable_noStore()로 캐시 비활성화
+ */
+export async function fetchAllPosts(): Promise<AdminReviewRow[]> {
+  // 관리자 전용: 매 요청마다 최신 데이터 조회
+  unstable_noStore()
+  const response = await notion.databases.query({
+    database_id: DATABASE_ID,
+    sorts: [{ property: 'Published', direction: 'descending' }],
+  })
+  return response.results
+    .filter((page): page is PageObjectResponse => page.object === 'page' && 'properties' in page)
+    .map((page) => ({
+      ...mapPageToReviewPost(page),
+      notionUrl: getNotionPageUrl(page.id),
+    }))
 }
 
 /**

@@ -128,3 +128,8 @@ export interface CategoryItem {
   label: string
   count: number
 }
+
+/** 관리자 리뷰 행 타입 (Notion 바로가기 URL 포함) */
+export interface AdminReviewRow extends ReviewPost {
+  notionUrl: string
+}
