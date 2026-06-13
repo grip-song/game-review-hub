@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import type { CategoryItem } from "@/types/notion"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface HeaderProps {
   /** Notion DB에서 파생된 카테고리 목록 (Server Component에서 전달) */
@@ -68,36 +69,41 @@ export function Header({ categories = [] }: HeaderProps) {
           ))}
         </nav>
 
-        {/* 모바일 메뉴 */}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-64 pt-10">
-            <SheetHeader className="sr-only">
-              <SheetTitle>카테고리 메뉴</SheetTitle>
-            </SheetHeader>
-            <nav className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                    isActive(link.href)
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
+        {/* 우측 액션 영역: ThemeToggle(데스크탑/모바일 공통) + 모바일 메뉴 트리거 */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          {/* 모바일 메뉴 */}
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64 pt-10">
+              <SheetHeader className="sr-only">
+                <SheetTitle>카테고리 메뉴</SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
+                      isActive(link.href)
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
   )

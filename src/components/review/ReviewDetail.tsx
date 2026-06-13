@@ -11,6 +11,7 @@ import { Calendar, ThumbsUp, ThumbsDown } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import type { ReviewPost } from "@/types/notion"
+import { ShareButton } from "@/components/review/ShareButton"
 
 interface ReviewDetailProps {
   post: ReviewPost
@@ -89,6 +90,11 @@ export function ReviewDetail({ post }: ReviewDetailProps) {
             ))}
           </div>
         )}
+
+        {/* 공유 버튼 — Client Component를 Server Component 내에서 삽입 */}
+        <div className="mt-3">
+          <ShareButton title={post.title} />
+        </div>
       </header>
 
       <Separator className="mb-8" />
