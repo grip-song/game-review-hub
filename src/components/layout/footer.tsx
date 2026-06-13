@@ -30,26 +30,34 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} 게임 리뷰. All rights reserved.
           </p>
-          <p className="text-sm text-muted-foreground">
-            Powered by{" "}
+          <div className="flex items-center gap-4">
+            <p className="text-sm text-muted-foreground">
+              Powered by{" "}
+              <Link
+                href="https://nextjs.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-foreground"
+              >
+                Next.js
+              </Link>
+              {" & "}
+              <Link
+                href="https://notion.so"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 hover:text-foreground"
+              >
+                Notion
+              </Link>
+            </p>
             <Link
-              href="https://nextjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:text-foreground"
+              href="/admin/login"
+              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
             >
-              Next.js
+              관리자
             </Link>
-            {" & "}
-            <Link
-              href="https://notion.so"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Notion
-            </Link>
-          </p>
+          </div>
         </div>
       </div>
     </footer>
