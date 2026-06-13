@@ -179,7 +179,6 @@ function NotionBlockRenderer({ block }: { block: NotionBlock }) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 65vw"
-              referrerPolicy="no-referrer"
             />
           </div>
           {caption.length > 0 && (

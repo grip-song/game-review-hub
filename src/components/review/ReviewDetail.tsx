@@ -55,7 +55,6 @@ export function ReviewDetail({ post }: ReviewDetailProps) {
             className="w-full h-auto"
             sizes="(max-width: 768px) 100vw, 768px"
             priority
-            referrerPolicy="no-referrer"
           />
         </div>
       )}
